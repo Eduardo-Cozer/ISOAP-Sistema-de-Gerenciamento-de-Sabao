@@ -1,42 +1,3 @@
-/*import mongoose from "mongoose"
-const Schema = mongoose.Schema;
-
-const Pedido = new Schema({
-    cliente: {
-        type: Schema.Types.ObjectId,
-        ref: "clientes",
-        required: true
-    },
-    itens: [{
-        produto: {
-        type: Schema.Types.ObjectId,
-        ref: "produtos",
-        required: true
-        },
-        quantidade: {
-            type: Number,
-            required: true
-        },
-    }],
-    pagamento: {
-        type: String,
-        required: true
-    },
-    descricao: {
-        type: String,
-    },
-    total: {
-        type: Number,
-        required: true
-    },
-    data: {
-        type: Date,
-        default : Date.now()
-    }
-})
-
-mongoose.model("pedidos", Pedido)*/
-
 import mongoose from "mongoose";
 
 const { Schema } = mongoose;
@@ -75,6 +36,6 @@ const pedidoSchema = new Schema({
     }
 });
 
-const PedidoModel = mongoose.model("pedidos", pedidoSchema);
+const PedidoModel = mongoose.model("Pedido", pedidoSchema);
 
 export default PedidoModel;
