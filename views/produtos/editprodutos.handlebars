@@ -1,0 +1,20 @@
+{{#each erros}}
+    <div class="alert alert-danger">{{texto}}</div>
+{{else}}
+{{/each}}
+<h3>Editar Produto:</h3>
+<div class="card">
+    <div class="card-body">
+        <form action="/produtos/edit" method="POST">
+            <input type="hidden" name="id" value="{{produto._id}}">
+            <label for="nome">Nome: </label>
+            <input type="text" name="nome" id="nome" placeholder="Nome do produto" class="form-control" value="{{produto.nome}}">
+            <label for="preco">Preço: </label>
+            <div class="input-group mb-3">
+                <span class="input-group-text">R$</span>
+                <input type="number" name="preco" id="preco" placeholder="Preço do produto" class="form-control" value="{{produto.preco}}">
+            </div>
+            <button type="submit" class="btn btn-outline-primary mt-3">Editar</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,97 @@
+{{#each erros}}
+    <div class="alert alert-danger">{{texto}}</div>
+{{else}}
+{{/each}}
+
+<div class="card">
+    <div class="card-body">
+        <h4>Novo pedido:</h4>
+        <form action="/pedidos/novo" method="post">
+            <label for="cliente">Cliente: </label>
+            <select name="cliente" class="form-select">
+                {{#each clientes}}
+                    <option value="{{_id}}">{{nome}}</option>
+                {{else}}
+                    <option value="0">Nenhum cliente</option>
+                {{/each}}
+            </select>
+            <div id="produtos">
+                <div class="produto">
+                <label for="produto">Produto(s): </label>
+                    <div class="input-group mb-3">
+                        <select name="produto[]" class="form-select">
+                                    {{#each produtos}}
+                                        <option value="{{_id}}">{{nome}} - R$ {{preco}}</option>
+                                    {{else}}
+                                        <option value="0">Nenhum produto</option>
+                                    {{/each}}
+                                </select>
+                        <label class="input-group-text" for="quantidade">Quantidade: </label>
+                        <input type="number" name="quantidade[]" class="form-control" onchange="calcularTotal()">
+                        <button class="btn btn-primary" type="button" onclick="adicionarProduto()">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="input-group mb-3 mt-2">
+            <label class="input-group-text" for="pagamento">Forma de pagamento</label>
+            <select class="form-select" name="pagamento">
+                <option value="0">Escolha...</option>
+                <option value="1">Pix</option>
+                <option value="2">Dinheiro</option>
+                <option value="3">Cartão</option>
+            </select>
+            </div>
+            <label for="descricao">Descrição: </label>
+            <textarea name="descricao" class="form-control"></textarea> 
+            <label for="total">Total: </label>
+            <div class="input-group mb-3">
+                <span class="input-group-text">R$</span>
+                <input type="number" name="total" id="total" class="form-control" readonly>
+            </div>
+            <button class="btn btn-success mt-3" type="submit">Criar pedido</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function adicionarProduto() {
+        var produtosDiv = document.getElementById('produtos');
+        var novoProdutoDiv = document.createElement('div');
+        novoProdutoDiv.classList.add('produto');
+        novoProdutoDiv.innerHTML = `
+            <div class="input-group mb-3">
+                <select name="produto[]" class="form-select">
+                            {{#each produtos}}
+                                <option value="{{_id}}">{{nome}} - R$ {{preco}}</option>
+                            {{else}}
+                                <option value="0">Nenhum produto</option>
+                            {{/each}}
+                        </select>
+                <label class="input-group-text" for="quantidade">Quantidade: </label>
+                <input type="number" name="quantidade[]" class="form-control" onchange="calcularTotal()">
+                <button class="btn btn-primary" type="button" onclick="adicionarProduto()">+</button>
+                <button class="btn btn-danger" type="button" onclick="removerProduto(this)">-</button>
+            </div>
+        `;
+        produtosDiv.appendChild(novoProdutoDiv);
+    }
+
+    function removerProduto(elemento) {
+        var produtoRemover = elemento.parentNode;
+        produtoRemover.remove();
+        calcularTotal();
+    }
+
+    function calcularTotal() {
+        var total = 0;
+        var quantidades = document.querySelectorAll('input[name="quantidade[]"]');
+        var precos = document.querySelectorAll('select[name="produto[]"] option:checked');
+        for (var i = 0; i < precos.length; i++) {
+            var preco = parseFloat(precos[i].textContent.split(' ')[precos[i].textContent.split(' ').length - 1]);
+            var quantidade = parseInt(quantidades[i].value);
+            total += preco * quantidade;
+        }
+        document.getElementById('total').value = total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+</script>
+

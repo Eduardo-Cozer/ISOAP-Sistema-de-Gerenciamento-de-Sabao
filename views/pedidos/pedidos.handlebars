@@ -1,0 +1,27 @@
+<h2>Lista de pedidos:</h2>
+<hr>
+<a href="/pedidos/add"><button class="btn btn-success">Novo pedido</button></a>
+
+{{#each pedidos}}
+    <div class="card mt-4">
+        <div class="card-body">
+            <h4>Cliente: {{cliente.nome}}</h4>
+            <p>Itens:</p>
+            <ul>
+                {{#each itens}}
+                    <li>{{produto.nome}} - R$ {{produto.preco}} - Quantidade: {{quantidade}}</li>
+                {{/each}}
+            </ul>
+            <p>Forma de pagamento: {{pagamento}}</p>
+            <p>Descrição: {{descricao}}</p>
+            <p>Total: R$ {{total}}</p>
+            <small>Data: {{data}}</small>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <a href="/pedidos/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
+                <a href="/pedidos/deletar/{{_id}}"><button class="btn btn-danger btn-sm">Deletar</button></a>
+            </div>
+        </div>
+    </div>
+{{else}}
+    <h4 class="mt-3">Nenhum pedido registrado</h4>
+{{/each}}
