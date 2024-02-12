@@ -6,16 +6,18 @@ import flash from "connect-flash"
 import session from "express-session"
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import {eAdmin} from "./helpers/eAdmin.js"
 import Cliente from './controllers/Cliente.js';
 import Produto from './controllers/Produto.js';
 import Pedido from './controllers/Pedido.js';
+import Usuario from './controllers/Usuario.js'
 
 class App {
     constructor() {
         this.app = express()
         this.middlewares()
         this.database()
-        this.routes(new Produto(), new Pedido(), new Cliente())
+        this.routes(new Produto(), new Pedido(), new Cliente(), new Usuario())
     }
 
     middlewares() {
@@ -42,8 +44,15 @@ class App {
         this.app.use(express.static(path.join(dirname(fileURLToPath(import.meta.url)), "public")))
     }
 
-    routes(produtoInstance, pedidoInstance, clienteInstance) {
+    routes(produtoInstance, pedidoInstance, clienteInstance, usuarioInstance) {
         this.app.get('/', (req, res) => pedidoInstance.home(req, res))
+
+        this.app.get('/usuarios', (req, res) => usuarioInstance.list(req, res));
+        this.app.get('/usuarios/add', (req, res) => usuarioInstance.addPage(req, res));
+        this.app.post('/usuarios/novo', (req, res) => usuarioInstance.add(req, res));
+        this.app.get('/usuarios/edit/:id', (req, res) => usuarioInstance.editPage(req, res));
+        this.app.post('/usuarios/edit', (req, res) => usuarioInstance.edit(req, res));
+        this.app.post('/usuarios/deletar', (req, res) => usuarioInstance.delete(req, res));
 
         this.app.get('/clientes', (req, res) => clienteInstance.list(req, res))
         this.app.get('/clientes/add', (req, res) => clienteInstance.addPage(req, res))
