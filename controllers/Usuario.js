@@ -12,6 +12,13 @@ class Usuario extends UsuarioModel {
     }
 
     login(req, res, next) {
+        const { nome, senha } = req.body;
+
+        if (!nome || !senha) {
+            req.flash("error_msg", "Por favor, preencha todos os campos");
+            return res.redirect("/");
+        }
+
         passport.authenticate("local", {
             successRedirect: "/home",
             failureRedirect: "/",
@@ -25,7 +32,7 @@ class Usuario extends UsuarioModel {
 
     async register(req, res) {
         try {
-            const { nome, senha, senha2 } = req.body;
+            const { nome, senha, senha2, eAdmin} = req.body;
             const erros = [];
 
             if (!nome || !senha || !senha2 || senha.length < 4 || senha !== senha2) {
@@ -36,59 +43,31 @@ class Usuario extends UsuarioModel {
             const usuarioExistente = await UsuarioModel.findOne({ nome });
             if (usuarioExistente) {
                 req.flash("error_msg", "Já existe uma conta cadastrada com esse nome");
-                return res.redirect("/registro");
+                return res.redirect("/usuarios/add");
             }
 
-            const novoUsuario = new Usuario({ nome, senha });
+            const novoUsuario = new UsuarioModel({ nome, senha, eAdmin });
+
+            novoUsuario.eAdmin = eAdmin === "admin" ? 1 : 0;
+
             const salt = await bcrypt.genSalt(10);
             novoUsuario.senha = await bcrypt.hash(novoUsuario.senha, salt);
+
             await novoUsuario.save();
 
             req.flash("success_msg", "Usuário criado com sucesso!");
             res.redirect("/");
         } catch (err) {
             req.flash("error_msg", "Houve um erro ao criar o usuário");
-            res.redirect("/registro");
+            res.redirect("/usuarios/add");
         }
     }
 
-    logoutPage(req, res) {
+    logout(req, res) {
         req.logout((err) => {
             req.flash("success_msg", "Deslogado com sucesso!");
             res.redirect("/");
         });
-    }
-
-    deletePage(req, res) {
-        res.render("usuarios/deletar");
-    }
-
-    delete(req, res, next) {
-        passport.authenticate("local", (err, user, info) => {
-            if (err) {
-                return next(err);
-            }
-            if (!user) {
-                req.flash("error_msg", "Nome ou senha incorretos");
-                return res.redirect("/deletar");
-            }
-            UsuarioModel.deleteOne({ _id: user._id })
-                .then(() => {
-                    req.flash("success_msg", "Conta deletada com sucesso!");
-                    res.redirect("/");
-                })
-                .catch((err) => {
-                    req.flash("error_msg", "Houve um erro ao deletar a conta");
-                    res.redirect("/deletar");
-                });
-        })(req, res, next);
-    }
-  
-    logoutPage(req, res) {
-        req.logOut((err) => {
-            req.flash("success_msg", "Deslogado com sucesso!")
-            res.redirect("/")
-        }) 
     }
   
     deletePage(req, res) {
@@ -103,7 +82,7 @@ class Usuario extends UsuarioModel {
                 }
                 if (!user) {
                     req.flash("error_msg", "Nome ou senha incorretos");
-                    return res.redirect("/deletar");
+                    return res.redirect("/usuarios/delete");
                 }
                 await Usuario.deleteOne({ _id: user._id });
                 req.flash("success_msg", "Conta deletada com sucesso!");
@@ -111,7 +90,9 @@ class Usuario extends UsuarioModel {
             })(req, res, next);
         } catch (err) {
             req.flash("error_msg", "Houve um erro ao deletar a conta");
-            res.redirect("/deletar");
+            res.redirect("/usuarios/delete");
         }
     }
 }
+
+export default Usuario

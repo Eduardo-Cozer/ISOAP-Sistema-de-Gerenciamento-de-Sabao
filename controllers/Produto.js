@@ -11,7 +11,7 @@ class Produto extends ProdutoModel {
             res.render("produtos/produtos", { produtos })
         } catch (err) {
             req.flash("error_msg", "Houve um erro ao listar produtos")
-            res.status(500).redirect("/")
+            res.status(500).redirect("/home")
         }
     }
   

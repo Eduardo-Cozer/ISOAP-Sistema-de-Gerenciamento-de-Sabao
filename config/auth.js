@@ -1,5 +1,4 @@
 import { Strategy as LocalStrategy } from 'passport-local';
-import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 import UsuarioModel from "../models/Usuario.js"
 
@@ -30,7 +29,7 @@ export default function(passport){
 
     passport.deserializeUser(async (id, done) => {
         try{
-            const usuario = await Usuario.findById(id);
+            const usuario = await UsuarioModel.findById(id);
             done(null, usuario);
         }catch (err){
             done(err);

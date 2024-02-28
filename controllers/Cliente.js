@@ -11,7 +11,7 @@ class Cliente extends ClienteModel {
             res.render("clientes/clientes", { clientes })
         } catch (err) {
             req.flash("error_msg", "Houve um erro ao listar clientes")
-            res.status(500).redirect("/")
+            res.status(500).redirect("/home")
         }
     }
   

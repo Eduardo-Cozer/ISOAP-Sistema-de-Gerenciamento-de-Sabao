@@ -22,7 +22,7 @@ class Pedido extends PedidoModel {
             res.render('index', { pedidos })
         } catch (err) {
             req.flash('error_msg', 'Houve um erro ao exibir os pedidos recentes')
-            res.status(500).redirect('/')
+            res.status(500).redirect('/home')
         }
     }
   
@@ -41,7 +41,7 @@ class Pedido extends PedidoModel {
             res.render('pedidos/pedidos', { pedidos })
         } catch (err) {
             req.flash('error_msg', 'Houve um erro ao listar pedidos')
-            res.status(500).redirect('/')
+            res.status(500).redirect('/home')
         }
     }
 

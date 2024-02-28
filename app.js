@@ -4,8 +4,10 @@ import path from "path"
 import mongoose from "mongoose"
 import flash from "connect-flash"
 import session from "express-session"
+import passport from "passport"
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
+import authConfig from "./config/auth.js"
 import {eAdmin} from "./helpers/eAdmin.js"
 import Cliente from './controllers/Cliente.js';
 import Produto from './controllers/Produto.js';
@@ -22,17 +24,21 @@ class App {
 
     middlewares() {
         this.app.use(session({
-        secret: "anything",
-        resave: true,
-        saveUninitialized: true
+            secret: "anything",
+            resave: true,
+            saveUninitialized: true
         }))
+        authConfig(passport);
+        this.app.use(passport.initialize())
+        this.app.use(passport.session())
         this.app.use(flash())
 
         this.app.use((req, res, next) => {
-        res.locals.success_msg = req.flash("success_msg")
-        res.locals.error_msg = req.flash("error_msg")
-        res.locals.error = req.flash("error")
-        next()
+            res.locals.success_msg = req.flash("success_msg")
+            res.locals.error_msg = req.flash("error_msg")
+            res.locals.error = req.flash("error")
+            res.locals.user = req.user || null
+            next()
         })
 
         this.app.use(express.urlencoded({ extended: true }))
@@ -45,14 +51,15 @@ class App {
     }
 
     routes(produtoInstance, pedidoInstance, clienteInstance, usuarioInstance) {
-        this.app.get('/', (req, res) => pedidoInstance.home(req, res))
+        this.app.get('/home', (req, res) => pedidoInstance.home(req, res))
 
-        this.app.get('/usuarios', (req, res) => usuarioInstance.list(req, res));
-        this.app.get('/usuarios/add', (req, res) => usuarioInstance.addPage(req, res));
-        this.app.post('/usuarios/novo', (req, res) => usuarioInstance.add(req, res));
-        this.app.get('/usuarios/edit/:id', (req, res) => usuarioInstance.editPage(req, res));
-        this.app.post('/usuarios/edit', (req, res) => usuarioInstance.edit(req, res));
-        this.app.post('/usuarios/deletar', (req, res) => usuarioInstance.delete(req, res));
+        this.app.get('/', (req, res) => usuarioInstance.loginPage(req, res))
+        this.app.post('/usuarios/login', (req, res, next) => usuarioInstance.login(req, res, next));
+        this.app.get('/usuarios/add', (req, res) => usuarioInstance.registerPage(req, res));
+        this.app.post('/usuarios/novo', (req, res) => usuarioInstance.register(req, res));
+        this.app.get('/usuarios/logout', (req, res) => usuarioInstance.logout(req, res));
+        this.app.get('/usuarios/delete', (req, res) => usuarioInstance.deletePage(req, res));
+        this.app.post('/usuarios/deletar', (req, res, next) => usuarioInstance.delete(req, res, next));
 
         this.app.get('/clientes', (req, res) => clienteInstance.list(req, res))
         this.app.get('/clientes/add', (req, res) => clienteInstance.addPage(req, res))
