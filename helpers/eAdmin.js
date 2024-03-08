@@ -3,5 +3,5 @@ export function eAdmin(req, res, next){
         return next()
     }
     req.flash("error_msg", "Você precisa ser um Admin!")
-    res.redirect("/")
+    res.redirect("/home")
 }

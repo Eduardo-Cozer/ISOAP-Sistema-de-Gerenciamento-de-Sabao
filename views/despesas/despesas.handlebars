@@ -1,17 +1,17 @@
-<h2>Lista de produtos:</h2>
+<h2>Lista de despesas:</h2>
 <hr>
-<a href="/produtos/add"><button class="btn btn-success">Novo produto</button></a>
+<a href="/despesas/add"><button class="btn btn-success">Nova despesa</button></a>
 
-{{#each produtos}}
+{{#each despesas}}
     <div class="card mt-4">
         <div class="card-body">
             <h4>Nome: {{nome}}</h4>
-            <p>Quantidade: {{quantidade}}</p>
             <p>Preço: {{preco}}</p>
+            <p>Descrição: {{descricao}}</p>
             <p>Data: {{date}}</p>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="/produtos/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
-                <form action="/produtos/deletar" method="post">
+                <a href=" despesas/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
+                <form action=" despesas/deletar" method="post">
                     <input type="hidden" name="id" value="{{_id}}">
                     <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
                 </form>
@@ -19,5 +19,5 @@
         </div>
     </div>
 {{else}}
-    <h4 class="mt-3">Nenhum produto registrado</h4>
+    <h4 class="mt-3">Nenhuma despesa registrada</h4>
 {{/each}}

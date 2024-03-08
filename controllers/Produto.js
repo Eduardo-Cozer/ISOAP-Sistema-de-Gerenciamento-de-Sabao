@@ -20,10 +20,10 @@ class Produto extends ProdutoModel {
     }
   
     async add(req, res) {
-        const { nome, preco } = req.body
+        const { nome, preco, quantidade } = req.body
         const erros = []
 
-        if (!nome || !preco) {
+        if (!nome || !preco || !quantidade) {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
     
@@ -31,7 +31,7 @@ class Produto extends ProdutoModel {
             res.status(400).render("produtos/addprodutos", { erros })
         } else {
             try {
-                const novoProduto = new ProdutoModel({ nome, preco })
+                const novoProduto = new ProdutoModel({ nome, preco, quantidade })
                 await novoProduto.save()
                 req.flash("success_msg", "Produto cadastrado com sucesso!")
                 res.redirect("/produtos")
@@ -53,10 +53,10 @@ class Produto extends ProdutoModel {
     }
   
     async edit(req, res) {
-        const { id, nome, preco } = req.body
+        const { id, nome, preco, quantidade } = req.body
         const erros = []
         
-        if (!nome || !preco) {
+        if (!nome || !preco || !quantidade) {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
     
@@ -77,7 +77,7 @@ class Produto extends ProdutoModel {
             try {
                 const produtoAtualizado = await Produto.findOneAndUpdate(
                     { _id: id },
-                    { nome, preco },
+                    { nome, preco, quantidade},
                     { new: true }
                 )
                 if (produtoAtualizado) {

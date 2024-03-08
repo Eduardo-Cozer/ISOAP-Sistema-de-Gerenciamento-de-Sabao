@@ -9,9 +9,10 @@ import { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import authConfig from "./config/auth.js"
 import {eAdmin} from "./helpers/eAdmin.js"
-import Cliente from './controllers/Cliente.js';
-import Produto from './controllers/Produto.js';
-import Pedido from './controllers/Pedido.js';
+import Despesa from './controllers/Despesa.js'
+import Cliente from './controllers/Cliente.js'
+import Produto from './controllers/Produto.js'
+import Pedido from './controllers/Pedido.js'
 import Usuario from './controllers/Usuario.js'
 
 class App {
@@ -19,7 +20,7 @@ class App {
         this.app = express()
         this.middlewares()
         this.database()
-        this.routes(new Produto(), new Pedido(), new Cliente(), new Usuario())
+        this.routes(new Produto(), new Pedido(), new Cliente(), new Usuario(), new Despesa())
     }
 
     middlewares() {
@@ -50,12 +51,12 @@ class App {
         this.app.use(express.static(path.join(dirname(fileURLToPath(import.meta.url)), "public")))
     }
 
-    routes(produtoInstance, pedidoInstance, clienteInstance, usuarioInstance) {
+    routes(produtoInstance, pedidoInstance, clienteInstance, usuarioInstance, despesaInstance) {
         this.app.get('/home', (req, res) => pedidoInstance.home(req, res))
 
         this.app.get('/', (req, res) => usuarioInstance.loginPage(req, res))
         this.app.post('/usuarios/login', (req, res, next) => usuarioInstance.login(req, res, next));
-        this.app.get('/usuarios/add', (req, res) => usuarioInstance.registerPage(req, res));
+        this.app.get('/usuarios/add',  (req, res) => usuarioInstance.registerPage(req, res));
         this.app.post('/usuarios/novo', (req, res) => usuarioInstance.register(req, res));
         this.app.get('/usuarios/logout', (req, res) => usuarioInstance.logout(req, res));
         this.app.get('/usuarios/delete', (req, res) => usuarioInstance.deletePage(req, res));
@@ -81,6 +82,13 @@ class App {
         this.app.get('/pedidos/edit/:id', (req, res) => pedidoInstance.editPage(req, res))
         this.app.post("/pedidos/edit", (req, res) => pedidoInstance.edit(req, res))
         this.app.get("/pedidos/deletar/:id", (req, res) => pedidoInstance.delete(req, res))
+
+        this.app.get('/despesas', (req, res) => despesaInstance.list(req, res))
+        this.app.get('/despesas/add', (req, res) => despesaInstance.addPage(req, res))
+        this.app.post("/despesas/novo", (req, res) => despesaInstance.add(req, res))
+        this.app.get('/despesas/edit/:id', (req, res) => despesaInstance.editPage(req, res))
+        this.app.post("/despesas/edit", (req, res) => despesaInstance.edit(req, res))
+        this.app.post("/despesas/deletar", (req, res) => despesaInstance.delete(req, res))
     }
 
     async database() {
