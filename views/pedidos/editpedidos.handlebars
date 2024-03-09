@@ -3,9 +3,9 @@
 {{else}}
 {{/each}}
 
+<h3>Editar pedido:</h3>
 <div class="card">
     <div class="card-body">
-        <h4>Editar pedido:</h4>
         <form action="/pedidos/edit" method="post">
             <input type="hidden" value="{{pedido._id}}" name="id">
             <label for="cliente">Cliente: </label>
@@ -43,9 +43,9 @@
             <select class="form-select" name="pagamento">
                 <option value="{{pedido.pagamento}}">{{pedido.pagamento}}</option>
                 <option value="0">Escolha...</option>
-                <option value="1">Pix</option>
-                <option value="2">Dinheiro</option>
-                <option value="3">Cartão</option>
+                <option value="Pix">Pix</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão">Cartão</option>
             </select>
             </div>
             <label for="descricao">Descrição: </label>
@@ -55,7 +55,7 @@
                 <span class="input-group-text">R$</span>
                 <input type="number" name="total" id="total" value="{{pedido.total}}" class="form-control" readonly>
             </div>
-            <button class="btn btn-outline-primary mt-3" type="submit">Atualizar pedido</button>
+            <button class="btn btn-outline-primary mt-3" type="submit">Editar</button>
         </form>
     </div>
 </div>

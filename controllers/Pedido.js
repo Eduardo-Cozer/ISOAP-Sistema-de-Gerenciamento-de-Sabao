@@ -59,60 +59,47 @@ class Pedido extends PedidoModel {
     }
 
     async add(req, res){
-        const {cliente, pagamento, descricao, total} = req.body
-        const produtos = req.body.produto
-        const quantidades = req.body.quantidade
-            
-        try{
-            if(!cliente || cliente === "0" || !pagamento || pagamento === "0" || !total || total === "0" || !produtos || !quantidades){
-                req.flash("error_msg", "Por favor, preencha todos os campos obrigatórios.")
-                return res.status(400).redirect("/pedidos/add")
+        const { cliente, pagamento, descricao, total, produto, quantidade } = req.body;
+        
+        try {
+            if (!cliente || cliente === "0" || !pagamento || pagamento === "0" || !total || total === "0" || !produto || !quantidade) {
+                req.flash("error_msg", "Por favor, preencha todos os campos obrigatórios.");
+                return res.status(400).redirect("/pedidos/add");
             }
 
-            if(!Array.isArray(produtos) || !Array.isArray(quantidades) || produtos.length !== quantidades.length){
-                req.flash("error_msg", "Erro ao processar os produtos.")
-                return res.status(400).redirect("/pedidos/add")
-            }
-
-            let formaPagamento
-            if(req.body.pagamento === "1"){
-                formaPagamento = "Pix"
-            }else if(req.body.pagamento === "2"){
-                formaPagamento = "Dinheiro"
-            }else if(req.body.pagamento === "3"){
-                formaPagamento = "Cartão"
-            }else{
-                formaPagamento = "Escolha..."
-            }
-    
-            const itensPedido = []
-    
-            for(let i = 0 ; i < produtos.length ; i++){
-                const itemPedido = {
-                    produto: produtos[i],
-                    quantidade: quantidades[i]
+            for (let i = 0; i < produto.length; i++) {
+                const prod = await ProdutoModel.findById(produto[i]);
+                if (!prod) {
+                    req.flash("error_msg", `Produto não encontrado para ID: ${produto[i]}`);
+                    return res.status(404).redirect("/pedidos/add");
                 }
-                itensPedido.push(itemPedido)
+                if (quantidade[i] > prod.quantidade) {
+                    req.flash("error_msg", `Estoque insuficiente para o produto: ${prod.nome}`);
+                    return res.status(400).redirect("/pedidos/add");
+                }
             }
 
             const novoPedido = new PedidoModel({
                 cliente,
-                itens: itensPedido,
-                pagamento: formaPagamento,
+                itens: produto.map((prodId, index) => ({ produto: prodId, quantidade: quantidade[index] })),
+                pagamento,
                 descricao,
                 total
-            })
+            });
 
-            await novoPedido.save()
-    
-            req.flash("success_msg", "Pedido criado com sucesso!")
-            res.redirect("/pedidos")
-        }catch (err){
-            req.flash("error_msg", "Erro ao criar pedido, tente novamente.")
-            res.status(500).redirect("/pedidos/add")
+            await novoPedido.save();
+
+            for (let i = 0; i < produto.length; i++) {
+                await ProdutoModel.findByIdAndUpdate(produto[i], { $inc: { quantidade: -quantidade[i] } });
+            }
+
+            req.flash("success_msg", "Pedido criado com sucesso!");
+            res.redirect("/pedidos");
+        } catch (error) {
+            req.flash("error_msg", "Erro ao criar pedido, tente novamente.");
+            res.status(500).redirect("/pedidos/add");
         }
     }
-
 
     async editPage(req, res) {
         try {
@@ -132,48 +119,55 @@ class Pedido extends PedidoModel {
 
     async edit(req, res) {
         try {
-            const pedido = await Pedido.findOne({ _id: req.body.id })
-                .populate('cliente')
-                .populate('itens.produto')
-            const clientes = await Cliente.find()
-            const produtos = await Produto.find()
-    
-            const erros = []
-    
-            if (!req.body.cliente || req.body.cliente === "0" || !req.body.pagamento || req.body.pagamento === "0" || !req.body.total || req.body.total === "0" || !req.body.produto || !req.body.quantidade) {
-                erros.push({ texto: "Por favor, preencha todos os campos obrigatórios." })
+            const pedido = await Pedido.findOne({ _id: req.body.id });
+            const { cliente, pagamento, descricao, total, produto, quantidade } = req.body;
+
+            if (!cliente || cliente === "0" || !pagamento || pagamento === "0" || !total || total === "0" || !produto || !quantidade) {
+                req.flash("error_msg", "Por favor, preencha todos os campos obrigatórios.");
+                return res.status(400).redirect(`/pedidos/edit/${req.body.id}`);
             }
-    
-            let formaPagamento
-            if (req.body.pagamento === "1" || req.body.pagamento === "Pix") {
-                formaPagamento = "Pix"
-            } else if (req.body.pagamento === "2" || req.body.pagamento === "Dinheiro") {
-                formaPagamento = "Dinheiro"
-            } else if (req.body.pagamento === "3" || req.body.pagamento === "Cartão") {
-                formaPagamento = "Cartão"
-            } else {
-                formaPagamento = "Escolha..."
+
+            for (let i = 0; i < produto.length; i++) {
+                const prod = await ProdutoModel.findById(produto[i]);
+                if (!prod) {
+                    req.flash("error_msg", `Produto não encontrado para ID: ${produto[i]}`);
+                    return res.status(404).redirect(`/pedidos/edit/${req.body.id}`);
+                }
+                // Verificar se a quantidade atual é suficiente para remover do estoque
+                const diferencaQuantidade = quantidade[i] - pedido.itens[i].quantidade;
+                if (diferencaQuantidade > prod.quantidade) {
+                    req.flash("error_msg", `Estoque insuficiente para o produto: ${prod.nome}`);
+                    return res.status(400).redirect(`/pedidos/edit/${req.body.id}`);
+                }
             }
-    
-            if (erros.length > 0) {
-                res.status(400).render("pedidos/editpedidos", { erros, clientes, produtos, pedido })
-            } else {
-                pedido.cliente = req.body.cliente
-                pedido.itens = req.body.produto.map((produtoId, index) => ({
-                    produto: produtoId,
-                    quantidade: req.body.quantidade[index]
-                }))
-                pedido.pagamento = formaPagamento
-                pedido.descricao = req.body.descricao
-                pedido.total = req.body.total
-    
-                await pedido.save()
-                req.flash("success_msg", "Pedido editado com sucesso!")
-                res.redirect("/pedidos")
+
+            for (let i = 0; i < produto.length; i++) {
+                const diferencaQuantidade = quantidade[i] - pedido.itens[i].quantidade;
+                if (diferencaQuantidade > 0) {
+                    await ProdutoModel.findByIdAndUpdate(produto[i], { $inc: { quantidade: -diferencaQuantidade } });
+                }
             }
-        } catch (err) {
-            req.flash("error_msg", "Houve um erro ao editar o pedido")
-            res.status(500).redirect("/pedidos")
+
+            for (let i = 0; i < produto.length; i++) {
+                const diferencaQuantidade = quantidade[i] - pedido.itens[i].quantidade;
+                if (diferencaQuantidade < 0) {
+                    await ProdutoModel.findByIdAndUpdate(produto[i], { $inc: { quantidade: -diferencaQuantidade } });
+                }
+            }
+
+            pedido.cliente = cliente;
+            pedido.itens = produto.map((prodId, index) => ({ produto: prodId, quantidade: quantidade[index] }));
+            pedido.pagamento = pagamento;
+            pedido.descricao = descricao;
+            pedido.total = total;
+
+            await pedido.save();
+
+            req.flash("success_msg", "Pedido editado com sucesso!");
+            res.redirect("/pedidos");
+        } catch (error) {
+            req.flash("error_msg", "Houve um erro ao editar o pedido");
+            res.status(500).redirect(`/pedidos/edit/${req.body.id}`);
         }
     }
 

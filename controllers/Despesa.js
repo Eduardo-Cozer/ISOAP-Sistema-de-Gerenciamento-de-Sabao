@@ -23,7 +23,7 @@ class Despesa extends DespesaModel {
         const { nome, preco, descricao } = req.body
         const erros = []
 
-        if (!nome || !preco || !descricao) {
+        if (!nome || !preco) {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
     
@@ -56,7 +56,7 @@ class Despesa extends DespesaModel {
         const { id, nome, preco, descricao} = req.body
         const erros = []
         
-        if (!nome || !preco || !descricao) {
+        if (!nome || !preco ) {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
     

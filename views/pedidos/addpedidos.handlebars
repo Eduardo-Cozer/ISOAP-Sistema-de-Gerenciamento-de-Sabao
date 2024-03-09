@@ -3,9 +3,9 @@
 {{else}}
 {{/each}}
 
+<h3>Cadastrar pedido:</h3>
 <div class="card">
     <div class="card-body">
-        <h4>Novo pedido:</h4>
         <form action="/pedidos/novo" method="post">
             <label for="cliente">Cliente: </label>
             <select name="cliente" class="form-select">
@@ -36,9 +36,9 @@
             <label class="input-group-text" for="pagamento">Forma de pagamento</label>
             <select class="form-select" name="pagamento">
                 <option value="0">Escolha...</option>
-                <option value="1">Pix</option>
-                <option value="2">Dinheiro</option>
-                <option value="3">Cartão</option>
+                <option value="Pix">Pix</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão">Cartão</option>
             </select>
             </div>
             <label for="descricao">Descrição: </label>
@@ -48,7 +48,7 @@
                 <span class="input-group-text">R$</span>
                 <input type="number" name="total" id="total" class="form-control" readonly>
             </div>
-            <button class="btn btn-success mt-3" type="submit">Criar pedido</button>
+            <button class="btn btn-success mt-3" type="submit">Cadastrar</button>
         </form>
     </div>
 </div>
