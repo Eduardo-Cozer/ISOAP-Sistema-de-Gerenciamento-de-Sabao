@@ -133,7 +133,7 @@ class Pedido extends PedidoModel {
                     req.flash("error_msg", `Produto não encontrado para ID: ${produto[i]}`);
                     return res.status(404).redirect(`/pedidos/edit/${req.body.id}`);
                 }
-                // Verificar se a quantidade atual é suficiente para remover do estoque
+                
                 const diferencaQuantidade = quantidade[i] - pedido.itens[i].quantidade;
                 if (diferencaQuantidade > prod.quantidade) {
                     req.flash("error_msg", `Estoque insuficiente para o produto: ${prod.nome}`);

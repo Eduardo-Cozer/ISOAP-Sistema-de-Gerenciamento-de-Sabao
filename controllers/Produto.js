@@ -26,6 +26,12 @@ class Produto extends ProdutoModel {
         if (!nome || !preco || !quantidade) {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
+
+        const produtoExistente = await ProdutoModel.findOne({ nome });
+            if (produtoExistente) {
+                req.flash("error_msg", "Já existe um produto cadastrado com esse nome");
+                return res.redirect("/produtos/add");
+            }
     
         if (erros.length > 0) {
             res.status(400).render("produtos/addprodutos", { erros })
@@ -75,6 +81,20 @@ class Produto extends ProdutoModel {
             }
         } else {
             try {
+                const produto = await Produto.findOne({ _id: id });
+                if (!produto) {
+                    req.flash("error_msg", "Este produto não existe");
+                    return res.status(404).redirect("/produtos");
+                }
+
+                if (produto.nome !== nome) {
+                    const produtoExistente = await Produto.findOne({ nome });
+                    if (produtoExistente) {
+                        req.flash("error_msg", "Já existe um produto cadastrado com esse nome");
+                        return res.redirect(`/produtos/edit/${id}`);
+                    }
+                }
+
                 const produtoAtualizado = await Produto.findOneAndUpdate(
                     { _id: id },
                     { nome, preco, quantidade},

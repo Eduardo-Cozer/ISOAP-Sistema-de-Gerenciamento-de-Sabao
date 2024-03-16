@@ -26,9 +26,15 @@ class Cliente extends ClienteModel {
         if (!nome || !telefone || !rua || !numero || !bairro || !cidade) {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
+
+        const clienteExistente = await ClienteModel.findOne({ nome });
+            if (clienteExistente) {
+                req.flash("error_msg", "Já existe um cliente cadastrado com esse nome");
+                return res.redirect("/clientes/add");
+            }
     
         if (erros.length > 0) {
-            res.status(400).render("clientes/addclientes", { erros })
+            res.status(400).render("clientes/add", { erros })
         } else {
             try {
                 const novoCliente = new ClienteModel({
@@ -84,6 +90,20 @@ class Cliente extends ClienteModel {
             }
         } else {
             try {
+                const cliente = await Cliente.findOne({ _id: id });
+                if (!cliente) {
+                    req.flash("error_msg", "Este cliente não existe");
+                    return res.status(404).redirect("/clientes");
+                }
+
+                if (cliente.nome !== nome) {
+                    const clienteExistente = await Cliente.findOne({ nome });
+                    if (clienteExistente) {
+                        req.flash("error_msg", "Já existe um cliente cadastrado com esse nome");
+                        return res.redirect(`/clientes/edit/${id}`);
+                    }
+                }
+                
                 const clienteAtualizado = await Cliente.findOneAndUpdate(
                     { _id: id },
                     { nome, telefone, rua, numero, bairro, cidade, complemento },
