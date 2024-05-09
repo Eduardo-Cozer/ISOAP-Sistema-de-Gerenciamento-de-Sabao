@@ -7,8 +7,8 @@ import session from "express-session"
 import passport from "passport"
 import { dirname } from 'path'
 import { fileURLToPath } from 'url'
-import authConfig from "./config/auth.js"
-import {eAdmin} from "./helpers/eAdmin.js"
+import Auth  from "./config/auth.js"
+import AdminMiddleware from "./helpers/eAdmin.js"
 import Despesa from './controllers/Despesa.js'
 import Cliente from './controllers/Cliente.js'
 import Produto from './controllers/Produto.js'
@@ -29,7 +29,8 @@ class App {
             resave: true,
             saveUninitialized: true
         }))
-        authConfig(passport);
+        const auth = new Auth(passport)
+        auth.initialize()
         this.app.use(passport.initialize())
         this.app.use(passport.session())
         this.app.use(flash())
@@ -56,39 +57,39 @@ class App {
 
         this.app.get('/', (req, res) => usuarioInstance.loginPage(req, res))
         this.app.post('/usuarios/login', (req, res, next) => usuarioInstance.login(req, res, next));
-        this.app.get('/usuarios/add',  (req, res) => usuarioInstance.registerPage(req, res));
-        this.app.post('/usuarios/novo', (req, res) => usuarioInstance.register(req, res));
-        this.app.get('/usuarios/logout', (req, res) => usuarioInstance.logout(req, res));
-        this.app.get('/usuarios/delete', (req, res) => usuarioInstance.deletePage(req, res));
-        this.app.post('/usuarios/deletar', (req, res, next) => usuarioInstance.delete(req, res, next));
+        this.app.get('/usuarios/add', AdminMiddleware.checkAdmin, (req, res) => usuarioInstance.registerPage(req, res));
+        this.app.post('/usuarios/novo', AdminMiddleware.checkAdmin, (req, res) => usuarioInstance.register(req, res));
+        this.app.get('/usuarios/logout', AdminMiddleware.checkAdmin, (req, res) => usuarioInstance.logout(req, res));
+        this.app.get('/usuarios/delete', AdminMiddleware.checkAdmin, (req, res) => usuarioInstance.deletePage(req, res));
+        this.app.post('/usuarios/deletar', AdminMiddleware.checkAdmin,(req, res, next) => usuarioInstance.delete(req, res, next));
 
-        this.app.get('/clientes', (req, res) => clienteInstance.list(req, res))
-        this.app.get('/clientes/add', (req, res) => clienteInstance.addPage(req, res))
-        this.app.post("/clientes/novo", (req, res) => clienteInstance.add(req, res))
-        this.app.get("/clientes/edit/:id", (req, res) => clienteInstance.editPage(req, res))
-        this.app.post("/clientes/edit", (req, res) => clienteInstance.edit(req, res))
-        this.app.post("/clientes/deletar", (req, res) => clienteInstance.delete(req, res))
+        this.app.get('/clientes', AdminMiddleware.checkAdmin,(req, res) => clienteInstance.list(req, res))
+        this.app.get('/clientes/add', AdminMiddleware.checkAdmin,(req, res) => clienteInstance.addPage(req, res))
+        this.app.post("/clientes/novo", AdminMiddleware.checkAdmin,(req, res) => clienteInstance.add(req, res))
+        this.app.get("/clientes/edit/:id", AdminMiddleware.checkAdmin,(req, res) => clienteInstance.editPage(req, res))
+        this.app.post("/clientes/edit", AdminMiddleware.checkAdmin,(req, res) => clienteInstance.edit(req, res))
+        this.app.post("/clientes/deletar", AdminMiddleware.checkAdmin,(req, res) => clienteInstance.delete(req, res))
 
-        this.app.get('/produtos', (req, res) => produtoInstance.list(req, res))
-        this.app.get('/produtos/add', (req, res) => produtoInstance.addPage(req, res))
-        this.app.post("/produtos/novo", (req, res) => produtoInstance.add(req, res))
-        this.app.get("/produtos/edit/:id", (req, res) => produtoInstance.editPage(req, res))
-        this.app.post("/produtos/edit", (req, res) => produtoInstance.edit(req, res))
-        this.app.post("/produtos/deletar", (req, res) => produtoInstance.delete(req, res))
+        this.app.get('/produtos', AdminMiddleware.checkAdmin,(req, res) => produtoInstance.list(req, res))
+        this.app.get('/produtos/add', AdminMiddleware.checkAdmin,(req, res) => produtoInstance.addPage(req, res))
+        this.app.post("/produtos/novo", AdminMiddleware.checkAdmin,(req, res) => produtoInstance.add(req, res))
+        this.app.get("/produtos/edit/:id", AdminMiddleware.checkAdmin,(req, res) => produtoInstance.editPage(req, res))
+        this.app.post("/produtos/edit", AdminMiddleware.checkAdmin,(req, res) => produtoInstance.edit(req, res))
+        this.app.post("/produtos/deletar", AdminMiddleware.checkAdmin,(req, res) => produtoInstance.delete(req, res))
 
-        this.app.get('/pedidos', (req, res) => pedidoInstance.list(req, res))
-        this.app.get('/pedidos/add', (req, res) => pedidoInstance.addPage(req, res))
-        this.app.post("/pedidos/novo", (req, res) => pedidoInstance.add(req, res))
-        this.app.get('/pedidos/edit/:id', (req, res) => pedidoInstance.editPage(req, res))
-        this.app.post("/pedidos/edit", (req, res) => pedidoInstance.edit(req, res))
-        this.app.get("/pedidos/deletar/:id", (req, res) => pedidoInstance.delete(req, res))
+        this.app.get('/pedidos', AdminMiddleware.checkAdmin,(req, res) => pedidoInstance.list(req, res))
+        this.app.get('/pedidos/add', AdminMiddleware.checkAdmin,(req, res) => pedidoInstance.addPage(req, res))
+        this.app.post("/pedidos/novo", AdminMiddleware.checkAdmin,(req, res) => pedidoInstance.add(req, res))
+        this.app.get('/pedidos/edit/:id', AdminMiddleware.checkAdmin,(req, res) => pedidoInstance.editPage(req, res))
+        this.app.post("/pedidos/edit", AdminMiddleware.checkAdmin,(req, res) => pedidoInstance.edit(req, res))
+        this.app.get("/pedidos/deletar/:id", AdminMiddleware.checkAdmin,(req, res) => pedidoInstance.delete(req, res))
 
-        this.app.get('/despesas', (req, res) => despesaInstance.list(req, res))
-        this.app.get('/despesas/add', (req, res) => despesaInstance.addPage(req, res))
-        this.app.post("/despesas/novo", (req, res) => despesaInstance.add(req, res))
-        this.app.get('/despesas/edit/:id', (req, res) => despesaInstance.editPage(req, res))
-        this.app.post("/despesas/edit", (req, res) => despesaInstance.edit(req, res))
-        this.app.post("/despesas/deletar", (req, res) => despesaInstance.delete(req, res))
+        this.app.get('/despesas', AdminMiddleware.checkAdmin,(req, res) => despesaInstance.list(req, res))
+        this.app.get('/despesas/add', AdminMiddleware.checkAdmin,(req, res) => despesaInstance.addPage(req, res))
+        this.app.post("/despesas/novo", AdminMiddleware.checkAdmin,(req, res) => despesaInstance.add(req, res))
+        this.app.get('/despesas/edit/:id', AdminMiddleware.checkAdmin,(req, res) => despesaInstance.editPage(req, res))
+        this.app.post("/despesas/edit", AdminMiddleware.checkAdmin,(req, res) => despesaInstance.edit(req, res))
+        this.app.post("/despesas/deletar", AdminMiddleware.checkAdmin,(req, res) => despesaInstance.delete(req, res))
     }
 
     async database() {

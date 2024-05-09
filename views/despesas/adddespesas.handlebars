@@ -8,13 +8,13 @@
         <form action="/despesas/novo" method="POST">
             <label for="nome">Nome: </label>
             <input type="text" name="nome" id="nome" placeholder="Nome da despesa" class="form-control">
+            <label for="descricao">Descrição: </label>
+            <textarea name="descricao" class="form-control"></textarea> 
             <label for="preco">Preço: </label>
             <div class="input-group mb-3">
                 <span class="input-group-text">R$</span>
                 <input type="number" name="preco" id="preco" placeholder="Preço da despesa" class="form-control">
             </div>
-            <label for="descricao">Descrição: </label>
-            <textarea name="descricao" class="form-control"></textarea> 
             <button type="submit" class="btn btn-success mt-3">Cadastrar</button>
         </form>
     </div>

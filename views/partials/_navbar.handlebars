@@ -22,13 +22,19 @@
           <a class="nav-link active" aria-current="page" href="/despesas">Despesas</a>
         </li>
       </ul>
-      <ul class="navbar-nav ml-auto">
+      <ul class="navbar-nav ms-auto">
+        {{#if user}}
+        {{else}}
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Logar</a>
+          </li>
+        {{/if}}
         </li>
           <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="/home" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             {{user.nome}}
           </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="/usuarios/add">Registrar usuário</a></li>
             <li><a class="dropdown-item" href="/usuarios/delete">Deletar conta</a></li>
             <li><hr class="dropdown-divider"></li>

@@ -34,7 +34,7 @@ class Cliente extends ClienteModel {
             }
     
         if (erros.length > 0) {
-            res.status(400).render("clientes/add", { erros })
+            res.status(400).render("clientes/addclientes", { erros })
         } else {
             try {
                 const novoCliente = new ClienteModel({

@@ -55,7 +55,7 @@
                 <span class="input-group-text">R$</span>
                 <input type="number" name="total" id="total" value="{{pedido.total}}" class="form-control" readonly>
             </div>
-            <button class="btn btn-outline-primary mt-3" type="submit">Editar</button>
+            <button class="btn btn-outline-primary mt-3" type="submit">Salvar</button>
         </form>
     </div>
 </div>
@@ -109,6 +109,6 @@
             var quantidade = parseInt(quantidades[i].value);
             total += preco * quantidade;
         }
-        document.getElementById('total').value = total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        document.getElementById('total').value = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 </script>

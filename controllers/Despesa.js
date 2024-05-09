@@ -8,15 +8,15 @@ class Despesa extends DespesaModel {
     async list(req, res) {
         try {
             const despesas = await Despesa.find()
-            res.render("Despesas/Despesas", { despesas })
+            res.render("despesas/despesas", { despesas })
         } catch (err) {
-            req.flash("error_msg", "Houve um erro ao listar Despesas")
+            req.flash("error_msg", "Houve um erro ao listar despesas")
             res.status(500).redirect("/home")
         }
     }
   
     addPage(req, res) {
-        res.render("Despesas/addDespesas")
+        res.render("despesas/adddespesas")
     }
   
     async add(req, res) {
@@ -28,16 +28,16 @@ class Despesa extends DespesaModel {
         }
     
         if (erros.length > 0) {
-            res.status(400).render("Despesas/addDespesas", { erros })
+            res.status(400).render("despesas/adddespesas", { erros })
         } else {
             try {
                 const novoDespesa = new DespesaModel({ nome, preco, descricao })
                 await novoDespesa.save()
                 req.flash("success_msg", "Despesa cadastrada com sucesso!")
-                res.redirect("/Despesas")
+                res.redirect("/despesas")
             } catch (err) {
                 req.flash("error_msg", "Houve um erro ao salvar Despesa, tente novamente!")
-                res.status(500).redirect("/Despesas/add")
+                res.status(500).redirect("/despesas/add")
             }
         }
     }
@@ -45,10 +45,10 @@ class Despesa extends DespesaModel {
     async editPage(req, res) {
         try {
             const despesa = await Despesa.findOne({ _id: req.params.id })
-            res.render("Despesas/editDespesas", { despesa })
+            res.render("despesas/editdespesas", { despesa })
         } catch (err) {
             req.flash("error_msg", "Esta Despesa não existe")
-            res.status(404).redirect("/Despesas")
+            res.status(404).redirect("/despesas")
         }
     }
   
@@ -64,14 +64,14 @@ class Despesa extends DespesaModel {
             try {
                 const despesa = await Despesa.findOne({ _id: id })
                 if (despesa) {
-                    res.render("Despesas/editDespesas", { despesa, erros })
+                    res.render("despesas/editdespesas", { despesa, erros })
                 } else {
                     req.flash("error_msg", "Esta Despesa não existe")
-                    res.status(404).redirect("/Despesas")
+                    res.status(404).redirect("/despesas")
                 }
             } catch (err) {
                 req.flash("error_msg", "Houve um erro interno ao buscar a Despesa")
-                res.status(500).redirect("/Despesas")
+                res.status(500).redirect("/despesas")
             }
         } else {
             try {
@@ -82,14 +82,14 @@ class Despesa extends DespesaModel {
                 )
                 if (despesaAtualizada) {
                     req.flash("success_msg", "Despesa editado com sucesso!")
-                    res.redirect("/Despesas")
+                    res.redirect("/despesas")
                 } else {
                     req.flash("error_msg", "Esta Despesa não existe")
-                    res.status(404).redirect("/Despesas")
+                    res.status(404).redirect("/despesas")
                 }
             } catch (err) {
                 req.flash("error_msg", "Houve um erro interno ao editar Despesa")
-                res.status(500).redirect("/Despesas")
+                res.status(500).redirect("/despesas")
             }
         }
     }
@@ -98,10 +98,10 @@ class Despesa extends DespesaModel {
         try {
             await Despesa.deleteOne({ _id: req.body.id })
             req.flash("success_msg", "Despesa deletada com sucesso!")
-            res.redirect("/Despesas")
+            res.redirect("/despesas")
         } catch (err) {
             req.flash("error_msg", "Houve um erro ao deletar a Despesa")
-            res.status(500).redirect("/Despesas")
+            res.status(500).redirect("/despesas")
         }
     }
 }
