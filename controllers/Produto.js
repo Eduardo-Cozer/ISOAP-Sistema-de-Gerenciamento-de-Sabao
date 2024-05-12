@@ -116,7 +116,7 @@ class Produto extends ProdutoModel {
   
     async delete(req, res) {
         try {
-            await Produto.deleteOne({ _id: req.body.id })
+            await Produto.deleteOne({ _id: req.params.id })
             req.flash("success_msg", "Produto deletado com sucesso!")
             res.redirect("/produtos")
         } catch (err) {

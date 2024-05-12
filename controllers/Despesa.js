@@ -96,7 +96,7 @@ class Despesa extends DespesaModel {
   
     async delete(req, res) {
         try {
-            await Despesa.deleteOne({ _id: req.body.id })
+            await Despesa.deleteOne({ _id: req.params.id })
             req.flash("success_msg", "Despesa deletada com sucesso!")
             res.redirect("/despesas")
         } catch (err) {

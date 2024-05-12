@@ -11,13 +11,20 @@
             <p>Data: {{date}}</p>
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <a href="/produtos/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
-                <form action="/produtos/deletar" method="post">
-                    <input type="hidden" name="id" value="{{_id}}">
-                    <button type="submit" class="btn btn-danger btn-sm">Deletar</button>
-                </form>
+                <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
             </div>
         </div>
     </div>
 {{else}}
     <h4 class="mt-3">Nenhum produto registrado</h4>
 {{/each}}
+
+<script>
+function confirmDelete(produtoId) {
+    const confirmed = confirm("Tem certeza de que deseja excluir este produto?");
+
+    if(confirmed){
+        window.location.href = `/produtos/deletar/${produtoId}`;
+    }
+}
+</script>

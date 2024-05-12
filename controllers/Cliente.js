@@ -125,7 +125,7 @@ class Cliente extends ClienteModel {
   
     async delete(req, res) {
         try {
-            await Cliente.deleteOne({ _id: req.body.id })
+            await Cliente.deleteOne({ _id: req.params.id })
             req.flash("success_msg", "Cliente deletado com sucesso!")
             res.redirect("/clientes")
         } catch (err) {
@@ -133,6 +133,7 @@ class Cliente extends ClienteModel {
             res.status(500).redirect("/clientes")
         }
     }
+    
 }
 
 export default Cliente
