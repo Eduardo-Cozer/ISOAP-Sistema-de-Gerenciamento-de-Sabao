@@ -1,6 +1,7 @@
 import PedidoModel from "../models/Pedido.js"
 import ClienteModel from "../models/Cliente.js"
 import ProdutoModel from "../models/Produto.js"
+import PDFDocument from "pdfkit";
 
 class Pedido extends PedidoModel {
     constructor() {
@@ -179,6 +180,47 @@ class Pedido extends PedidoModel {
         } catch (err) {
             res.flash("error_msg", "Houve um erro ao deletar o pedido")
             res.status(500).redirect("/pedidos")
+        }
+    }
+
+    async generatePDF(req, res) {
+        try {
+            const pedido = await Pedido.findById(req.params.id)
+                .populate("cliente")
+                .populate("itens.produto");
+    
+            if(!pedido){
+                throw new Error("Pedido não encontrado");
+            }
+    
+            const doc = new PDFDocument();
+    
+            let buffers = [];
+            doc.on('data', buffers.push.bind(buffers));
+            doc.on('end', () => {
+                const pdfData = Buffer.concat(buffers);
+                res.setHeader("Content-Type", "application/pdf");
+                res.setHeader("Content-Disposition", 'inline; filename="pedido.pdf"');
+                res.end(pdfData);
+            });
+    
+            doc.fontSize(20).text("Detalhes do Pedido", { align: "center" }).moveDown();
+    
+            doc.fontSize(14).text(`Cliente: ${pedido.cliente.nome}`).moveDown();
+            doc.text("Itens do Pedido:");
+            pedido.itens.forEach((item) => {
+                doc.text(`- Produto: ${item.produto.nome}, Quantidade: ${item.quantidade}`);
+            });
+            doc.text(`Forma de Pagamento: ${pedido.pagamento}`).moveDown();
+            doc.text(`Descrição: ${pedido.descricao}`).moveDown();
+            doc.text(`Total: R$ ${pedido.total}`).moveDown();
+            doc.text(`Data: ${pedido.data}`).moveDown();
+    
+            doc.end();
+    
+        } catch (error) {
+            console.error("Erro ao gerar o PDF:", error);
+            res.status(500).send("Erro ao gerar o PDF");
         }
     }
 }

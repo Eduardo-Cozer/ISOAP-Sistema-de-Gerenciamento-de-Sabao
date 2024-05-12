@@ -83,6 +83,7 @@ class App {
         this.app.get('/pedidos/edit/:id', (req, res) => pedidoInstance.editPage(req, res))
         this.app.post("/pedidos/edit", (req, res) => pedidoInstance.edit(req, res))
         this.app.get("/pedidos/deletar/:id", (req, res) => pedidoInstance.delete(req, res))
+        this.app.get("/pedidos/pdf/:id", (req, res) => pedidoInstance.generatePDF(req, res))
 
         this.app.get('/despesas', (req, res) => despesaInstance.list(req, res))
         this.app.get('/despesas/add', (req, res) => despesaInstance.addPage(req, res))

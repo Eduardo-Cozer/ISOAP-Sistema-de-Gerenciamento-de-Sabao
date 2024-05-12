@@ -19,6 +19,7 @@
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <a href="/pedidos/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
                 <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
+                <a href="#" onclick="generatePDF('{{_id}}')"><button class="btn btn-secondary btn-sm">Gerar PDF</button></a>
             </div>
         </div>
     </div>
@@ -33,5 +34,22 @@ function confirmDelete(pedidoId) {
     if(confirmed){
         window.location.href = `/pedidos/deletar/${pedidoId}`;
     }
+}
+
+function generatePDF(pedidoId) {
+    // Envia uma requisição para a rota que gera o PDF
+    fetch(`/pedidos/pdf/${pedidoId}`)
+        .then(response => response.blob())
+        .then(blob => {
+            // Cria uma URL para o blob do PDF
+            const url = window.URL.createObjectURL(blob);
+            // Abre uma nova guia com o PDF
+            window.open(url, '_blank');
+            // Limpa a URL após a guia ser fechada
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('Erro ao gerar o PDF:', error);
+        });
 }
 </script>
