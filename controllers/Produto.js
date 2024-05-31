@@ -27,7 +27,7 @@ class Produto extends ProdutoModel {
             erros.push({ texto: "Preencha todos os campos obrigatórios." })
         }
 
-        const produtoExistente = await ProdutoModel.findOne({ nome });
+        const produtoExistente = await ProdutoModel.findOne({ nome })
             if (produtoExistente) {
                 req.flash("error_msg", "Já existe um produto cadastrado com esse nome");
                 return res.redirect("/produtos/add");
@@ -81,17 +81,17 @@ class Produto extends ProdutoModel {
             }
         } else {
             try {
-                const produto = await Produto.findOne({ _id: id });
+                const produto = await Produto.findOne({ _id: id })
                 if (!produto) {
-                    req.flash("error_msg", "Este produto não existe");
-                    return res.status(404).redirect("/produtos");
+                    req.flash("error_msg", "Este produto não existe")
+                    return res.status(404).redirect("/produtos")
                 }
 
                 if (produto.nome !== nome) {
-                    const produtoExistente = await Produto.findOne({ nome });
+                    const produtoExistente = await Produto.findOne({ nome })
                     if (produtoExistente) {
-                        req.flash("error_msg", "Já existe um produto cadastrado com esse nome");
-                        return res.redirect(`/produtos/edit/${id}`);
+                        req.flash("error_msg", "Já existe um produto cadastrado com esse nome")
+                        return res.redirect(`/produtos/edit/${id}`)
                     }
                 }
 

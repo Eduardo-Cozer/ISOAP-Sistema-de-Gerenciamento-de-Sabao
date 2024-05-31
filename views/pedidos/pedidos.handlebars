@@ -5,21 +5,26 @@
 {{#each pedidos}}
     <div class="card mt-4">
         <div class="card-body">
-            <h4>Cliente: {{cliente.nome}}</h4>
-            <p>Itens:</p>
-            <ul>
-                {{#each itens}}
-                    <li>{{produto.nome}} - R$ {{produto.preco}} - Quantidade: {{quantidade}}</li>
-                {{/each}}
-            </ul>
-            <p>Forma de pagamento: {{pagamento}}</p>
-            <p>Descrição: {{descricao}}</p>
-            <p>Total: R$ {{total}}</p>
-            <small>Data: {{data}}</small>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="/pedidos/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
-                <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
-                <a href="#" onclick="generatePDF('{{_id}}')"><button class="btn btn-secondary btn-sm">Gerar PDF</button></a>
+            <h4>{{numeroPedido}}</h4>
+            <h5>Cliente: {{cliente.nome}}</h5>
+            <button class="btn btn-info btn-sm" onclick="toggleDetails('{{_id}}')">Mostrar/Esconder</button>
+            <div id="detalhes-{{_id}}" style="display: none;">
+                <p>Itens:</p>
+                <ul>
+                    {{#each itens}}
+                        <li>{{produto.nome}} - R$ {{produto.preco}} - Quantidade: {{quantidade}}</li>
+                    {{/each}}
+                </ul>
+                <p>Frete: R$ {{frete}}</p>
+                <p>Forma de pagamento: {{pagamento}}</p>
+                <p>Descrição: {{descricao}}</p>
+                <p>Total: R$ {{total}}</p>
+                <small>Data: {{data}}</small>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/pedidos/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
+                    <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
+                    <a href="#" onclick="generatePDF('{{_id}}')"><button class="btn btn-secondary btn-sm">Gerar PDF</button></a>
+                </div>
             </div>
         </div>
     </div>
@@ -28,28 +33,34 @@
 {{/each}}
 
 <script>
-function confirmDelete(pedidoId) {
-    const confirmed = confirm("Tem certeza de que deseja excluir este pedido?");
-
-    if(confirmed){
-        window.location.href = `/pedidos/deletar/${pedidoId}`;
+    function formatarID(id) {
+        return id.substring(0, 6)
     }
-}
 
-function generatePDF(pedidoId) {
-    // Envia uma requisição para a rota que gera o PDF
-    fetch(`/pedidos/pdf/${pedidoId}`)
-        .then(response => response.blob())
-        .then(blob => {
-            // Cria uma URL para o blob do PDF
-            const url = window.URL.createObjectURL(blob);
-            // Abre uma nova guia com o PDF
-            window.open(url, '_blank');
-            // Limpa a URL após a guia ser fechada
-            window.URL.revokeObjectURL(url);
-        })
-        .catch(error => {
-            console.error('Erro ao gerar o PDF:', error);
-        });
-}
+    function confirmDelete(pedidoId) {
+        const confirmed = confirm("Tem certeza de que deseja excluir este pedido?")
+
+        if(confirmed){
+            window.location.href = `/pedidos/deletar/${pedidoId}`
+        }
+    }
+
+    function generatePDF(pedidoId) {
+        fetch(`/pedidos/pdf/${pedidoId}`)
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob)
+                window.open(url, '_blank');
+                window.URL.revokeObjectURL(url)
+            })
+            .catch(error => {
+                console.error('Erro ao gerar o PDF:', error)
+            });
+    }
+
+    function toggleDetails(clienteId) {
+        const detalhesDiv = document.getElementById(`detalhes-${clienteId}`)
+        
+        detalhesDiv.style.display = detalhesDiv.style.display === 'none' ? 'block' : 'none'
+    }
 </script>

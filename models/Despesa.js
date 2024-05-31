@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const desepesaSchema = new Schema({
     nome: {
@@ -20,6 +20,6 @@ const desepesaSchema = new Schema({
     }
 });
 
-const DespesaModel = mongoose.model("Despesa", desepesaSchema);
+const DespesaModel = mongoose.model("Despesa", desepesaSchema)
 
-export default DespesaModel;
+export default DespesaModel

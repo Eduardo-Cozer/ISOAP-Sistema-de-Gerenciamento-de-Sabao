@@ -1,8 +1,12 @@
-import mongoose from "mongoose";
+import mongoose from "mongoose"
 
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const pedidoSchema = new Schema({
+    numeroPedido: {
+        type: String,
+        unique: true
+    },
     cliente: {
         type: Schema.Types.ObjectId,
         ref: "Cliente",
@@ -19,6 +23,10 @@ const pedidoSchema = new Schema({
             required: true
         },
     }],
+    frete: {
+        type: Number,
+        required: true
+    },
     pagamento: {
         type: String,
         required: true
@@ -36,6 +44,23 @@ const pedidoSchema = new Schema({
     }
 });
 
-const PedidoModel = mongoose.model("Pedido", pedidoSchema);
+pedidoSchema.pre('save', async function(next) {
+    try {
+        if(!this.numeroPedido){
+            const ultimoPedido = await this.constructor.findOne({}, {}, { sort: { 'data': -1 } })
+            let proximoNumeroPedido = 1
+            if(ultimoPedido){
+                proximoNumeroPedido = parseInt(ultimoPedido.numeroPedido.split('-')[1]) + 1
+            }
 
-export default PedidoModel;
+            this.numeroPedido = `PED-${proximoNumeroPedido.toString().padStart(6, '0')}`
+        }
+        next();
+    } catch (error) {
+        next(error)
+    }
+});
+
+const PedidoModel = mongoose.model("Pedido", pedidoSchema)
+
+export default PedidoModel

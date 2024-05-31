@@ -6,12 +6,15 @@
     <div class="card mt-4">
         <div class="card-body">
             <h4>Nome: {{nome}}</h4>
-            <p>Preço: {{preco}}</p>
-            <p>Descrição: {{descricao}}</p>
-            <p>Data: {{date}}</p>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href=" despesas/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
-                <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
+            <button class="btn btn-info btn-sm" onclick="toggleDetails('{{_id}}')">Mostrar/Esconder</button>
+            <div id="detalhes-{{_id}}" style="display: none;">
+                <p>Preço: {{preco}}</p>
+                <p>Descrição: {{descricao}}</p>
+                <p>Data: {{date}}</p>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href=" despesas/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
+                    <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
+                </div>
             </div>
         </div>
     </div>
@@ -20,11 +23,17 @@
 {{/each}}
 
 <script>
-function confirmDelete(despesaId) {
-    const confirmed = confirm("Tem certeza de que deseja excluir este despesa?");
+    function confirmDelete(despesaId) {
+        const confirmed = confirm("Tem certeza de que deseja excluir este despesa?")
 
-    if(confirmed){
-        window.location.href = `/despesas/deletar/${despesaId}`;
+        if(confirmed){
+            window.location.href = `/despesas/deletar/${despesaId}`
+        }
     }
-}
+
+    function toggleDetails(despesaId) {
+        const detalhesDiv = document.getElementById(`detalhes-${despesaId}`)
+        
+        detalhesDiv.style.display = detalhesDiv.style.display === 'none' ? 'block' : 'none'
+    }
 </script>

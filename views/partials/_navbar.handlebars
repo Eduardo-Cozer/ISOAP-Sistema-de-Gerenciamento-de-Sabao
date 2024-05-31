@@ -24,11 +24,6 @@
       </ul>
       <ul class="navbar-nav ms-auto">
         {{#if user}}
-        {{else}}
-          <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="/">Logar</a>
-          </li>
-        {{/if}}
         </li>
           <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="/home" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -41,6 +36,11 @@
             <li><a class="dropdown-item" href="/usuarios/logout">Sair</a></li>
           </ul>
         </li>
+        {{else}}
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/">Logar</a>
+          </li>
+        {{/if}}
       </ul>
     </div>
   </div>

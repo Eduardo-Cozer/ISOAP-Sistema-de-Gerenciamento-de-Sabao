@@ -32,6 +32,11 @@
                     </div>
                 </div>
             </div>
+            <div class="input-group mb-3">
+                <label class="input-group-text" for="frete">Frete:</label>
+                <span class="input-group-text">R$</span>
+                <input type="number" name="frete" id="frete" class="form-control" onchange="calcularTotal()" value=0 step="any">
+            </div>
             <div class="input-group mb-3 mt-2">
             <label class="input-group-text" for="pagamento">Forma de pagamento</label>
             <select class="form-select" name="pagamento">
@@ -42,7 +47,7 @@
             </select>
             </div>
             <label for="descricao">Descrição: </label>
-            <textarea name="descricao" class="form-control"></textarea> 
+            <textarea name="descricao" placeholder="Descrição do pedido" class="form-control"></textarea> 
             <label for="total">Total: </label>
             <div class="input-group mb-3">
                 <span class="input-group-text">R$</span>
@@ -55,9 +60,9 @@
 
 <script>
     function adicionarProduto() {
-        var produtosDiv = document.getElementById('produtos');
-        var novoProdutoDiv = document.createElement('div');
-        novoProdutoDiv.classList.add('produto');
+        var produtosDiv = document.getElementById('produtos')
+        var novoProdutoDiv = document.createElement('div')
+        novoProdutoDiv.classList.add('produto')
         novoProdutoDiv.innerHTML = `
             <div class="input-group mb-3">
                 <select name="produto[]" class="form-select">
@@ -73,25 +78,30 @@
                 <button class="btn btn-danger" type="button" onclick="removerProduto(this)">-</button>
             </div>
         `;
-        produtosDiv.appendChild(novoProdutoDiv);
+        produtosDiv.appendChild(novoProdutoDiv)
     }
 
     function removerProduto(elemento) {
-        var produtoRemover = elemento.parentNode;
-        produtoRemover.remove();
-        calcularTotal();
+        var produtoRemover = elemento.parentNode
+        produtoRemover.remove()
+        calcularTotal()
     }
 
     function calcularTotal() {
-        var total = 0;
-        var quantidades = document.querySelectorAll('input[name="quantidade[]"]');
-        var precos = document.querySelectorAll('select[name="produto[]"] option:checked');
+        var total = 0
+        var quantidades = document.querySelectorAll('input[name="quantidade[]"]')
+        var precos = document.querySelectorAll('select[name="produto[]"] option:checked')
+        var frete = parseFloat(document.getElementById('frete').value || 0)
+
         for (var i = 0; i < precos.length; i++) {
-            var preco = parseFloat(precos[i].textContent.split(' ')[precos[i].textContent.split(' ').length - 1]);
-            var quantidade = parseInt(quantidades[i].value);
-            total += preco * quantidade;
+            var preco = parseFloat(precos[i].textContent.split(' ')[precos[i].textContent.split(' ').length - 1])
+            var quantidade = parseInt(quantidades[i].value || 0)
+            total += preco * quantidade
         }
-        document.getElementById('total').value = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+        total += frete
+
+        document.getElementById('total').value = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     }
 </script>
 

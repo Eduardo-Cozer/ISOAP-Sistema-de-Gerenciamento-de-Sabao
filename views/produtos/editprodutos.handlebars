@@ -10,11 +10,11 @@
             <label for="nome">Nome: </label>
             <input type="text" name="nome" id="nome" placeholder="Nome do produto" class="form-control" value="{{produto.nome}}">
             <label for="quantidade">Quantidade: </label>
-            <input type="number" name="quantidade" id="quantidade" placeholder="Quantidade do produto" class="form-control" value="{{produto.quantidade}}">
+            <input type="number" name="quantidade" id="quantidade" placeholder="Quantidade do produto em estoque" class="form-control" value="{{produto.quantidade}}">
             <label for="preco">Preço: </label>
             <div class="input-group mb-3">
                 <span class="input-group-text">R$</span>
-                <input type="number" name="preco" id="preco" placeholder="Preço do produto" class="form-control" step="any" value="{{produto.preco}}">
+                <input type="number" name="preco" id="preco" placeholder="Preço da unidade do produto" class="form-control" step="any" value="{{produto.preco}}">
             </div>
             <button type="submit" class="btn btn-outline-primary mt-3">Salvar</button>
         </form>

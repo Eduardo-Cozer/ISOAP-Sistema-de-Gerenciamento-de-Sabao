@@ -6,16 +6,19 @@
     <div class="card mt-4">
         <div class="card-body">
             <h4>Nome: {{nome}}</h4>
-            <p>Telefone: {{telefone}}</p>
-            <p>Rua: {{rua}}</p>
-            <p>Número: {{numero}}</p>
-            <p>Bairro: {{bairro}}</p>
-            <p>Cidade: {{cidade}}</p>
-            <p>Complemento: {{complemento}}</p>
-            <small>Data de criação: {{date}}</small>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <a href="/clientes/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
-                <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
+            <button class="btn btn-info btn-sm" onclick="toggleDetails('{{_id}}')">Mostrar/Esconder</button>
+            <div id="detalhes-{{_id}}" style="display: none;">
+                <p>Telefone: {{telefone}}</p>
+                <p>Rua: {{rua}}</p>
+                <p>Número: {{numero}}</p>
+                <p>Bairro: {{bairro}}</p>
+                <p>Cidade: {{cidade}}</p>
+                <p>Complemento: {{complemento}}</p>
+                <small>Data de criação: {{date}}</small>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="/clientes/edit/{{_id}}"><button class="btn btn-primary btn-sm">Editar</button></a>
+                    <a href="#" onclick="confirmDelete('{{_id}}')"><button class="btn btn-danger btn-sm">Deletar</button></a>
+                </div>
             </div>
         </div>
     </div>
@@ -24,11 +27,17 @@
 {{/each}}
 
 <script>
-function confirmDelete(clienteId) {
-    const confirmed = confirm("Tem certeza de que deseja excluir este cliente?");
+    function confirmDelete(clienteId) {
+        const confirmed = confirm("Tem certeza de que deseja excluir este cliente?");
 
-    if(confirmed){
-        window.location.href = `/clientes/deletar/${clienteId}`;
+        if(confirmed){
+            window.location.href = `/clientes/deletar/${clienteId}`;
+        }
     }
-}
+
+    function toggleDetails(clienteId) {
+        const detalhesDiv = document.getElementById(`detalhes-${clienteId}`);
+        
+        detalhesDiv.style.display = detalhesDiv.style.display === 'none' ? 'block' : 'none';
+    }
 </script>
